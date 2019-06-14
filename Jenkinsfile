@@ -13,19 +13,19 @@ pipeline {
 		//def mvnHome
 		stage ('Preparation') {
 		    agent {
-		        label 'slave'
+		        label 'Slave'
 		    }
 		    steps {
 			    git 'https://github.com/SirishaDuggi5/Maven-Java-Project.git'
 			    stash 'Source'
 			    script{
-			        mvnHome = tool 'Maven3.6'
+			        mvnHome = tool 'maven3'
 			    }
 		    }
 		}
 		stage ('Static Analysis'){
 			agent {
-				label "slave"
+				label "Slave"
             }
 			steps {
 				sh "'${mvnHome}/bin/mvn' clean cobertura:cobertura"			
@@ -38,7 +38,7 @@ pipeline {
 		}
 		stage ('build'){
 			agent {
-				label "slave"
+				label "Slave"
             }
 			steps {
 				sh "'${mvnHome}/bin/mvn' clean package"			
@@ -53,18 +53,18 @@ pipeline {
 		}
 		stage('Deploy-to-Stage') {
 		     agent {
-		        label 'slave'
+		        label 'Slave'
 		    }
 		    //SSH-Steps-Plugin should be installed
 		    //SCP-Publisher Plugin (Optional)
 		    steps {
 		        //sshScript remote: remote, script: "abc.sh"  	
-			sshPut remote: remote, from: 'target/java-maven-1.0.war', into: '/root/workspace/tomcat/webapps'		        
+			sshPut remote: remote, from: 'target/java-maven-1.0-SNAPSHOT', into: '/root/workspace/tomcat/webapps'		        
 		    }
     	}
     	stage ('Integration-Test') {
 			agent {
-				label "slave"
+				label "Slave"
             }
 			steps {
 				parallel (
@@ -81,7 +81,7 @@ pipeline {
 		}
 		stage ('approve') {
 			agent {
-				label "slave"
+				label "Slave"
             }
 			steps {
 				timeout(time: 7, unit: 'DAYS') {
@@ -91,7 +91,7 @@ pipeline {
 		}
 		stage ('Prod-Deploy') {
 			agent {
-				label "slave"
+				label "Slave"
             }
 			steps {
 				unstash 'Source'
