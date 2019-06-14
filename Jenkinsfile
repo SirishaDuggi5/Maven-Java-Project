@@ -19,7 +19,7 @@ pipeline {
 			    git 'https://github.com/SirishaDuggi5/Maven-Java-Project.git'
 			    stash 'Source'
 			    script{
-			        mvnHome = tool 'maven3'
+			        mvnHome = tool 'Maven3'
 			    }
 		    }
 		}
